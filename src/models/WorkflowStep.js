@@ -19,13 +19,13 @@ const WorkflowStep = {
       LEFT JOIN workflow_templates wt ON ws.workflow_template_id = wt.workflow_template_id
       LEFT JOIN departments d ON ws.assigned_department = d.dep_id
       LEFT JOIN users u ON ws.assigned_user_id = u.id
-      ORDER BY  ws.step_number ASC
+      ORDER BY ws.step_number ASC
     `;
     return new Promise((resolve, reject) => {
       db.query(query, (err, results) => (err ? reject(err) : resolve(results)));
     });
   },
-// ws.workflow_template_id,
+
   getAllByWorkflow: (workflow_template_id) => {
     const query = `
       SELECT * FROM workflow_steps
@@ -97,6 +97,29 @@ const WorkflowStep = {
     const query = `DELETE FROM workflow_steps WHERE step_id = ?`;
     return new Promise((resolve, reject) => {
       db.query(query, [id], (err, result) => (err ? reject(err) : resolve(result)));
+    });
+  },
+
+  // 🔥 NEW: get max step number for append
+  getMaxStepNumber: (workflow_template_id) => {
+    const query = `SELECT MAX(step_number) AS maxStep FROM workflow_steps WHERE workflow_template_id = ?`;
+    return new Promise((resolve, reject) => {
+      db.query(query, [workflow_template_id], (err, results) => {
+        if (err) return reject(err);
+        resolve(results[0]?.maxStep || 0);
+      });
+    });
+  },
+
+  // 🔥 NEW: shift steps down by +1 from a given step number
+  shiftStepsDown: (workflow_template_id, fromStep) => {
+    const query = `
+      UPDATE workflow_steps
+      SET step_number = step_number + 1
+      WHERE workflow_template_id = ? AND step_number >= ?
+    `;
+    return new Promise((resolve, reject) => {
+      db.query(query, [workflow_template_id, fromStep], (err, result) => (err ? reject(err) : resolve(result)));
     });
   }
 };
