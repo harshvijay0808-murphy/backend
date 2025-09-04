@@ -15,6 +15,7 @@ const profileRoutes = require('./src/routes/profileRoutes');
 const workflowRoutes = require('./src/routes/workflowRoutes');
 const workflowStepRoutes = require('./src/routes/workflowStepRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const roleRightsRoute = require('./src/routes/roleRightsRoute');
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/workflow-steps', workflowStepRoutes);
+app.use('/api/roleRights', roleRightsRoute);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
